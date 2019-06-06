@@ -1,0 +1,54 @@
+@import "../components/Navigation/navigation.less";
+
+@primary-color: #1f6c21;
+@primary-color-light: #529b4c;
+@primary-color-dark: #004000;
+
+#root {
+    margin: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #E9E0D6;
+    text-align: center;
+ }
+
+.bottom-border-shadow() {
+    -webkit-box-shadow: 0px 5px 6px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0px 5px 6px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px 5px 6px 0px rgba(0,0,0,0.15);
+}
+
+.bottom-border-shadow-off() {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+ body {
+     margin: 0;
+ }
+
+ .mapouter {
+    position: relative;
+    text-align:right;
+    height:500px;
+    width:600px;
+}.gmap_canvas {
+    overflow: hidden;
+    background:none!
+    important;
+    height:500px;
+    width:600px;
+}
+
+#spotifyPlayer {
+    padding: 3em;
+
+    #login-cta {
+        font-family: 'Open Sans', 'sans-serif';
+        color: #885522;
+        text-decoration: none;
+        font-size: 2em;
+        font-weight: bold;
+    }
+}

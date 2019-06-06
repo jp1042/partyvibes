@@ -1,0 +1,40 @@
+// tslint.json
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended",
+        "tslint-react",
+        "tslint-eslint-rules",
+        "tslint-react-hooks"
+    ],
+    "jsRules": {},
+    "rules": {
+        "react-hooks-nesting": "error",
+        "quotemark": [
+            true,
+            "double"
+        ],
+        "ter-indent": [
+            true,
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "linebreak-style": false,
+        "trailing-comma": true,
+        "member-ordering": [
+            true,
+            {
+                "order": "statics-first"
+            }
+        ],
+        "jsx-no-lambda": false,
+        "jsx-no-multiline-js": false,
+        "max-line-length": [
+            true,
+            150
+        ]
+    },
+    "rulesDirectory": []
+}
