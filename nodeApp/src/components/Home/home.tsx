@@ -1,35 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { UserType } from "../../data/user/userType";
 
 import { IUser } from "../../data/user/IUser";
+import Room from "../Room/room";
 import CreateRoomComponent from "./createRoom";
 import JoinRoomComponent from "./joinRoom";
-
-import { SocketHandler } from "../../api/websocket/socketHandler";
-
-import ISocketHandler from "../../api/websocket/ISocketHandler";
+import TestPage from "./testPage";
 
 function Home(props) {
-    const [userType, setUserType] = useState(UserType.Unset);
+    const user: IUser = JSON.parse(localStorage.getItem("user")) || {};
+    const sessionRoomData = JSON.parse(localStorage.getItem("roomData")) || null;
 
-    const user: IUser = JSON.parse(sessionStorage.getItem("user")) || {
-        name: "",
-        roomCode: "",
-        ip: "",
-        userType
-    };
+    const [userType, setUserType] = useState(user.userType || UserType.Unset);
+    const [roomCode, setRoomCode] = useState(user.roomCode);
+    const [username, setUserName] = useState(user.username);
+    const [roomData, setRoomData] = useState(sessionRoomData);
 
-    sessionStorage.setItem("user", JSON.stringify(user));
+    useEffect(() => {
+        props.socket.registerHandler(setRoomData);
+        // if (!!roomCode && !!username) {
+        //     props.socket.RejoinRoom(roomCode, username, Rejoined);
+        // }
+    }, []);
 
+    user.username = username;
+    user.roomCode = roomCode;
+    user.userType = userType;
+
+    console.log("session set");
+    localStorage.setItem("user", JSON.stringify(user));
+
+    //props.socket.registerHandler(setRoomData);
+
+    //return (<TestPage socket={props.socket}/>);
+
+    if (!!roomData) {
+        return (<Room data={roomData} socket={props.socket}/>);
+    }
     if (userType === UserType.Unset) {
         return MainMenu();
     }
     if (userType === UserType.Guest) {
-        return (<JoinRoomComponent socket={props.socket}/>);
+        return (<JoinRoomComponent socket={props.socket} usernameHook={(data) => setUserName(data)}/>);
     }
     if (userType === UserType.Host) {
-        return (<CreateRoomComponent socket={props.socket}/>);
+        return (<CreateRoomComponent socket={props.socket} roomCodeHook={(data) => setRoomCode(data)}/>);
+    }
+
+    function Rejoined() {
+        console.log("REJOINED");
     }
 
     function MainMenu() {

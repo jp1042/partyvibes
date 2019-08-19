@@ -1,7 +1,5 @@
 import React from "react";
 
-import {IUser} from "../../data/user/IUser";
-
 export default class CreateRoomComponent extends React.Component<any> {
     public render() {
         return (
@@ -16,6 +14,8 @@ export default class CreateRoomComponent extends React.Component<any> {
 
     private CreateRoom = (event) => {
         event.preventDefault();
+
+        // todo: sanitise inputs
         const input = (document.getElementById("RoomCodeInputField") as HTMLInputElement).value;
         this.props.socket.CreateRoom(input, this.CreateRoomResponse);
     }
@@ -23,10 +23,7 @@ export default class CreateRoomComponent extends React.Component<any> {
     private CreateRoomResponse = (data) => {
         switch (data.response) {
             case "SUCCESS":
-                const user: IUser = JSON.parse(sessionStorage.getItem("user"));
-                user.name = data.username;
-                user.roomCode = data.roomCode;
-                sessionStorage.setItem("user", JSON.stringify(user));
+                this.props.roomCodeHook(data.roomCode);
                 break;
             default:
                 alert(data.response);

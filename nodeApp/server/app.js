@@ -4,6 +4,7 @@ var app = express();
 var http = require('http').Server(app);
 const io = require('socket.io')(http);
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 
 //const {MongoConnection} = require("./mongoDB/mongoAccess");
 
@@ -21,16 +22,36 @@ MongoClient.connect(uri, { useNewUrlParser: true })
 .then(client => {
     io.on('connection', function (socket) {
         console.log("connected");
-        const rooms = client.db("PartyBase").collection("Rooms");
-        const users = client.db("PartyBase").collection("Users");        
+        const rooms = client.db("PartyBase").collection("Rooms");   
 
         socket.on('createRoom', function(roomCode, callbackFunction){
-            createRoom(rooms, roomCode, callbackFunction);
-            console.log(io.clients.length);
+            //console.log("1");
+            createRoom(rooms, roomCode, socket, callbackFunction);
         });
 
         socket.on('joinRoom', function(roomCode, username, callbackFunction){
-            joinRoom(rooms, roomCode, users, username, callbackFunction);
+            //console.log("2");
+            joinRoom(rooms, roomCode, username, socket, io, callbackFunction);
+        });
+
+        socket.on('rejoinRoom', function(roomCode, username, callbackFunction){
+            //console.log("3");
+            rejoinRoom(rooms, roomCode, username, socket, io, callbackFunction);
+        });
+
+        socket.on('downvote', function(roomCode, username, trackId, callbackFunction){
+            //console.log("4");
+            downvote(rooms, roomCode, username, trackId, io, callbackFunction);
+        });
+
+        socket.on('upvote', function(roomCode, username, trackId, callbackFunction){
+            //console.log("5");
+            upvote(rooms, roomCode, username, trackId, io, callbackFunction);
+        });
+
+        socket.on('addTrack', function(roomCode, username, trackData, callbackFunction){
+            //console.log("6");
+            addTrack(rooms, roomCode, username, trackData, io, callbackFunction);
         });
 
         socket.on('error', function (err) {
@@ -61,52 +82,159 @@ MongoClient.connect(uri, { useNewUrlParser: true })
     // })
 
 
-function createRoom(rooms, roomCode, callbackFunction) {
-    console.log("roomcode: " + roomCode);
-    rooms.findOne({roomCode})
-    .then(room => {
-        if (!!room && !!room.roomCode && !!roomCode) {
-            console.log("exists");
-            return callbackFunction({response: "ROOM_EXISTS"});
-        }
-        else {
-            console.log("added: " + roomCode);
-            rooms.insertOne({ roomCode, users: 0 })
-                .then(callbackFunction({response: "SUCCESS", roomCode}))
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    });
+function createRoom(rooms, roomCode, socket, callbackFunction) {
+    rooms.insertOne({_id: roomCode, userCount: 0}, {writeConcern: {w: 1}})
+        .then(result => {
+            if (result) {
+                console.log("room created: " + roomCode);
+                socket.join(roomCode);
+                return callbackFunction({code: "ROOM_CREATED", roomCode});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            return callbackFunction({code: "ROOM_EXISTS"});
+        });
 }
 
-function joinRoom(rooms, roomCode, users, username, callbackFunction) {
-    console.log("roomcode: " + roomCode);
-    rooms.findOne({roomCode})
-    .then(room => {
-        if (!!room && !!room.roomCode && !!roomCode) {
-            users.findOne({roomCode})
-            .then(
-                users.findOne({roomCode, username})
-                .then(user => {
-                    if (!user) {
-                        rooms.updateOne({roomCode}, { $set: {users: room.users + 1}})
-                        .then(users.insertOne({username, roomCode}))
-                            .then(callbackFunction({response: "SUCCESS", roomCode, username, }))
-                    }
-                    else {
-                        callbackFunction({response: "USER_EXISTS"});
-                    }
-                })
-            )
-        }           
-        else {
-            return callbackFunction({response: "ROOM_DOES_NOT_EXIST"});
-        }
-    })
-    .catch(err => {
-        console.log(err);
-    });
+function joinRoom(rooms, roomCode, username, socket, io, callbackFunction) {
+    rooms.findOneAndUpdate(
+        {_id: roomCode, users: {$nin: [{username}]}}, 
+        {
+            $push: {users: {username}},
+            $inc: {userCount: 1}
+        },
+        {
+            writeConcern: {w:1},
+            returnOriginal: false
+        })
+        .then(response => {
+            if (response.lastErrorObject.updatedExisting) {
+                console.log("joined room");
+                socket.join(roomCode);
+                io.to(roomCode).emit("message", {roomData: response.value, action: "JOINED_ROOM"});
+                return callbackFunction({code: "JOINED_ROOM", roomCode, username, roomData: response.value});
+            }
+            else {
+                console.log("exists");
+                return callbackFunction({code: "USER_EXISTS", roomCode, username, response});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+function rejoinRoom(rooms, roomCode, username, socket, io, callbackFunction) {
+
+    // if username = null check
+    rooms.findOne(
+        {_id: roomCode, users: {$in: [{username}]}}, 
+        {
+            writeConcern: {w:1},
+        })
+        .then(response => {           
+            if (!!response) {
+                console.log("rejoined room");
+                socket.join(roomCode);
+                //io.to(roomCode).emit("message", {roomData: response.value, action: "REJOINED_ROOM"});
+                return callbackFunction({code: "REJOINED_ROOM", roomCode, username, roomData: response.value});
+            }
+            else {
+                console.log("exists");
+                return callbackFunction({code: "USER_DOES_NOT_EXIST", roomCode, username, response});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+function addTrack(rooms, roomCode, username, callbackFunction) {
+    const trackData = {
+        name: "test track",
+        thumbnail: "img.jpg",
+        addedBy: "Johnny",
+    }
+    rooms.findOneAndUpdate(
+        {_id: roomCode}, 
+        {
+            $push: {queue: {trackData, votes: 0, position: 0, timestamp: Date.now(), trackId: new ObjectId()}},
+            $inc: {userCount: 1, queueLength: 1},
+        },
+        {
+            writeConcern: {w:1}, 
+            returnOriginal: false
+        })
+        .then(response => {
+            if (response.lastErrorObject.updatedExisting) {
+                console.log("added track");
+                io.to(roomCode).emit("message", {roomData: response.value, action: "ADDED_TRACK"});
+                return callbackFunction({code: "ADDED_TRACK", roomCode, username, roomData: response.value});
+            }
+            else {
+                console.log("failed to add track");
+                return callbackFunction({code: "FAILED_TO_ADD_TRACK", roomCode, username, response});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+function upvote(rooms, roomCode, username, trackId, io, callbackFunction) {
+    trackId = new ObjectId(trackId);
+    // if null track id throw error
+    console.log("upvote");
+    rooms.findOneAndUpdate(
+        {_id: roomCode}, 
+        {$inc: {"queue.$[track].position": 1}},
+        {
+            arrayFilters: [{"track.trackId": trackId}],
+            writeConcern: {w:1},
+            returnOriginal: false
+        })
+        .then(response => {
+            if (response.lastErrorObject.updatedExisting) {
+                console.log("upvoted");
+                io.to(roomCode).emit("message", {roomData: response.value, action: "UPVOTED"});
+                return callbackFunction({code: "UPVOTED", roomCode, username, roomData: response.value});
+            }
+            else {
+                console.log("upvote failed");
+                return callbackFunction({code: "UPVOTE_FAILED", roomCode, username, response});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
+}
+
+function downvote(rooms, roomCode, username, trackId, io, callbackFunction) {
+    trackId = new ObjectId(trackId);
+
+    rooms.findOneAndUpdate(
+        {_id: roomCode}, 
+        {$inc: {"queue.$[track].position": -1}},
+        {
+            arrayFilters: [{"track.trackId": trackId}],
+            writeConcern: {w:1},
+            returnOriginal: false
+        })
+        .then(response => {
+            if (response.lastErrorObject.updatedExisting) {
+                console.log("downvoted");
+                io.to(roomCode).emit("message", {roomData: response.value, action: "DOWNVOTED"});
+                return callbackFunction({code: "DOWNVOTED", roomCode, username, roomData: response.value});
+            }
+            else {
+                console.log("downvote failed");
+                return callbackFunction({code: "FAILED_TO_DOWNVOTE", roomCode, username, response});
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        })
 }
 
 function handleRegister() {

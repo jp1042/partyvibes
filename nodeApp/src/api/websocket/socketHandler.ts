@@ -10,8 +10,16 @@ export class SocketHandler {
         });
     }
 
-    public registerHandler(onMessageReceived) {
-        this.socket.on("message", onMessageReceived);
+    public registerHandler(setRoomData) {
+        // this.socket.on("message", (msg) => {
+        //     console.log(msg);
+        // });
+
+        this.socket.on('message', function (msg) {
+            console.log(msg);
+            localStorage.setItem("roomData", JSON.stringify(msg));
+            setRoomData(msg);
+        });
     }
 
     public unregisterHandler() {
@@ -28,6 +36,10 @@ export class SocketHandler {
 
     public JoinRoom(roomCode, username, cb) {
         this.socket.emit("joinRoom", roomCode, username, cb);
+    }
+
+    public RejoinRoom(roomCode, username, cb) {
+        this.socket.emit("rejoinRoom", roomCode, username, cb);
     }
 
     public leave(roomCode, cb) {
@@ -48,5 +60,13 @@ export class SocketHandler {
 
     public CreateRoom(roomCode, cb) {
         this.socket.emit("createRoom", roomCode, cb);
+    }
+
+    public Upvote(roomCode, username, trackId, cb) {
+        this.socket.emit("upvote", roomCode, username, trackId, cb);
+    }
+
+    public Downvote(roomCode, username, trackId, cb) {
+        this.socket.emit("downvote", roomCode, username, trackId, cb);
     }
 }

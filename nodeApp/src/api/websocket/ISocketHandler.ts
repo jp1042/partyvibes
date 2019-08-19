@@ -10,6 +10,8 @@ export default interface ISocketHandler {
 
     JoinRoom(roomCode, username, cb);
 
+    RejoinRoom(roomCode, username, cb);
+
     leave(roomCode, cb);
 
     message(roomCode, msg, cb);

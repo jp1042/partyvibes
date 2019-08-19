@@ -3,6 +3,6 @@ import { UserType } from "./userType";
 export interface IUser {
     userType: UserType;
     roomCode: string;
-    name: string;
+    username: string;
     ip: string;
 }

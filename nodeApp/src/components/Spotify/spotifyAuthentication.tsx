@@ -21,7 +21,7 @@ export default class SpotifyAuthentication extends React.Component {
     ];
 
     public state = {
-        token: sessionStorage.getItem("spotifyAuthToken") ||  "",
+        token: localStorage.getItem("spotifyAuthToken") ||  "",
     };
 
     public hash;
@@ -48,7 +48,7 @@ export default class SpotifyAuthentication extends React.Component {
             });
             console.log(token);
             window.location.hash = "";
-            sessionStorage.setItem("spotifyAuthToken", token);
+            localStorage.setItem("spotifyAuthToken", token);
         }
     }
 

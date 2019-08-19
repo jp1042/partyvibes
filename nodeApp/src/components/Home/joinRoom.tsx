@@ -18,6 +18,12 @@ export default class JoinRoomComponent extends React.Component<any> {
         event.preventDefault();
         const roomCodeInput = (document.getElementById("RoomCodeInputField") as HTMLInputElement).value;
         const nameInput = (document.getElementById("NameInputField") as HTMLInputElement).value;
-        this.props.socket.JoinRoom(roomCodeInput, nameInput, this.props.socket.callBackTest);
+        this.props.socket.JoinRoom(roomCodeInput, nameInput, this.JoinRoomCallback);
+    }
+
+    private JoinRoomCallback = (result) => {
+        localStorage.setItem("roomcode", JSON.stringify(result.roomCode));
+        localStorage.setItem("username", JSON.stringify(result.username));
+        console.log(result);
     }
 }
