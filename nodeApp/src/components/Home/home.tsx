@@ -16,9 +16,11 @@ function Home(props) {
     const [roomCode, setRoomCode] = useState(user.roomCode);
     const [username, setUserName] = useState(user.username);
     const [roomData, setRoomData] = useState(sessionRoomData);
+    const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         props.socket.registerHandler(setRoomData);
+        props.socket.RecieveMessage(setMessages);
         // if (!!roomCode && !!username) {
         //     props.socket.RejoinRoom(roomCode, username, Rejoined);
         // }
@@ -36,7 +38,7 @@ function Home(props) {
     //return (<TestPage socket={props.socket}/>);
 
     if (!!roomData) {
-        return (<Room data={roomData} socket={props.socket}/>);
+        return (<Room data={roomData} messages={messages} socket={props.socket}/>);
     }
     if (userType === UserType.Unset) {
         return MainMenu();

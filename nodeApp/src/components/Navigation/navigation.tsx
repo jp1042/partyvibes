@@ -1,12 +1,13 @@
 import React from "react";
 
 const Navigation = (props) => {
+
     return (
         <nav id="Navigation" className="navigation">
             <div className="swapper">
-                <i className="material-icons">chat_bubble_outline</i>
-                <i className="material-icons">equalizer</i>
-                <i className="material-icons">whatshot</i>
+                <i onClick={(e) => GoToSlide(e, 0)} style={IsActiveStyle(0)} className="material-icons">equalizer</i>
+                <i onClick={(e) => GoToSlide(e, 1)} style={IsActiveStyle(1)} className="material-icons">chat_bubble_outline</i>
+                <i onClick={(e) => GoToSlide(e, 2)} style={IsActiveStyle(2)} className="material-icons">whatshot</i>
             </div>
 
             <div className="user-count">
@@ -17,6 +18,19 @@ const Navigation = (props) => {
             </div>
         </nav>
     );
+
+    function IsActiveStyle(option) {
+        if (option === props.activeSlide) {
+            return {
+                color: "#F44336"
+            };
+        }
+    }
+
+    function GoToSlide(e, slideNumber) {
+        e.preventDefault();
+        props.slider.slickGoTo(slideNumber);
+    }
 };
 
 export default Navigation;

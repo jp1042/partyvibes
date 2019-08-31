@@ -14,7 +14,9 @@ export default interface ISocketHandler {
 
     leave(roomCode, cb);
 
-    message(roomCode, msg, cb);
+    Message(message, roomCode, username);
+
+    RecieveMessage(hook);
 
     getChatrooms(cb);
 

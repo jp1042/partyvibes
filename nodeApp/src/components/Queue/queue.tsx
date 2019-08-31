@@ -1,6 +1,9 @@
 import React from "react";
 import Track from "../Track/track";
 
+import FlipMove from "react-flip-move";
+import Search from "../Search/search";
+
 export default class Queue extends React.Component<any> {
     public render() {
 
@@ -9,13 +12,16 @@ export default class Queue extends React.Component<any> {
         });
 
         return (
-        <div className="queue">
-           {
-               sortedQueue.map((track, index) =>
-                <Track key={index} data={track} socket={this.props.socket}/>
-               )
-           }
-        </div>
+            <div>
+                <Search />
+                <div className="queue">
+                    <FlipMove>
+                        {sortedQueue.map((track, index) =>
+                            <Track key={track.trackId} data={track} socket={this.props.socket} />
+                        )}
+                    </FlipMove>
+                </div>
+            </div>
         );
     }
 }

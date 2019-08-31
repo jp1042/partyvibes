@@ -5,7 +5,6 @@ var http = require('http').Server(app);
 const io = require('socket.io')(http);
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
-
 //const {MongoConnection} = require("./mongoDB/mongoAccess");
 
 var publicPath = path.resolve(__dirname, '../public/');
@@ -23,6 +22,13 @@ MongoClient.connect(uri, { useNewUrlParser: true })
     io.on('connection', function (socket) {
         console.log("connected");
         const rooms = client.db("PartyBase").collection("Rooms");   
+
+        socket.on('message', function(message, roomCode, username){
+            console.log(message);
+            console.log(roomCode);
+            io.to(roomCode).emit("broadcastMessage", {text:message, username, id: new ObjectId()});
+            //io.to(roomCode).emit("roomUpdate", {roomData: response.value, action: "JOINED_ROOM"});
+        });
 
         socket.on('createRoom', function(roomCode, callbackFunction){
             //console.log("1");
@@ -112,7 +118,7 @@ function joinRoom(rooms, roomCode, username, socket, io, callbackFunction) {
             if (response.lastErrorObject.updatedExisting) {
                 console.log("joined room");
                 socket.join(roomCode);
-                io.to(roomCode).emit("message", {roomData: response.value, action: "JOINED_ROOM"});
+                io.to(roomCode).emit("roomUpdate", {roomData: response.value, action: "JOINED_ROOM"});
                 return callbackFunction({code: "JOINED_ROOM", roomCode, username, roomData: response.value});
             }
             else {
@@ -169,7 +175,7 @@ function addTrack(rooms, roomCode, username, callbackFunction) {
         .then(response => {
             if (response.lastErrorObject.updatedExisting) {
                 console.log("added track");
-                io.to(roomCode).emit("message", {roomData: response.value, action: "ADDED_TRACK"});
+                io.to(roomCode).emit("roomUpdate", {roomData: response.value, action: "ADDED_TRACK"});
                 return callbackFunction({code: "ADDED_TRACK", roomCode, username, roomData: response.value});
             }
             else {
@@ -197,7 +203,7 @@ function upvote(rooms, roomCode, username, trackId, io, callbackFunction) {
         .then(response => {
             if (response.lastErrorObject.updatedExisting) {
                 console.log("upvoted");
-                io.to(roomCode).emit("message", {roomData: response.value, action: "UPVOTED"});
+                io.to(roomCode).emit("roomUpdate", {roomData: response.value, action: "UPVOTED"});
                 return callbackFunction({code: "UPVOTED", roomCode, username, roomData: response.value});
             }
             else {
@@ -224,7 +230,7 @@ function downvote(rooms, roomCode, username, trackId, io, callbackFunction) {
         .then(response => {
             if (response.lastErrorObject.updatedExisting) {
                 console.log("downvoted");
-                io.to(roomCode).emit("message", {roomData: response.value, action: "DOWNVOTED"});
+                io.to(roomCode).emit("roomUpdate", {roomData: response.value, action: "DOWNVOTED"});
                 return callbackFunction({code: "DOWNVOTED", roomCode, username, roomData: response.value});
             }
             else {

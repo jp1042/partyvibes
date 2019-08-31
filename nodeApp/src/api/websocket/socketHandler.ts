@@ -15,7 +15,7 @@ export class SocketHandler {
         //     console.log(msg);
         // });
 
-        this.socket.on('message', function (msg) {
+        this.socket.on('roomUpdate', function (msg) {
             console.log(msg);
             localStorage.setItem("roomData", JSON.stringify(msg));
             setRoomData(msg);
@@ -46,8 +46,15 @@ export class SocketHandler {
         this.socket.emit("leave", roomCode, cb);
     }
 
-    public message(roomCode, msg, cb) {
-        this.socket.emit("message", { roomCode, message: msg }, cb);
+    public Message(message, roomCode, username) {
+        this.socket.emit("message", message, roomCode, username);
+    }
+
+    public RecieveMessage(setMessages) {
+        this.socket.on('broadcastMessage', (message) => {
+            console.log("test" + message);
+            setMessages(messages => [...messages, message]);
+        });
     }
 
     public getChatrooms(cb) {

@@ -10,9 +10,9 @@
     box-shadow: -2px 4px 3px -3px rgba(0, 0, 0, 0.15);
 
     .thumbnail-image-wrapper {
-        position: relative;
-        align-self: center;
+        display: flex;
         align-items: center;
+        justify-content: center;
         height: 100%;
         width: 15rem;
         border-radius: .25rem 0 0 .25rem;
@@ -32,7 +32,6 @@
         align-self: baseline;
         text-align: start;
         flex-wrap: wrap;
-        padding-left: 1rem;
         width: 100%;
     }
     
@@ -43,34 +42,37 @@
         // -moz-animation: horizontalScroll 15s linear infinite;
         // -webkit-animation: horizontalScroll 15s linear infinite;
         // animation: horizontalScroll 15s linear infinite;
+        margin-top: .5rem;
+        font-size: 1.2rem;
+        color: #505050;
         width: 100%;
-        font-size: 1.3rem;
+        font-size: 1.1rem;
     }
     
     .added-by {
         width: 100%;
-        color: #F44336;
+        color: dimgrey;
         align-self: flex-end;
     }
     
     .vote {
         display: flex;
-        align-items: center;
-        /* align-content: center; */
-        align-self: center;
-        flex-wrap: wrap;
-        //text-align: center;
-        width: 4rem;
+        justify-content: space-between;
+        /* align-self: center; */
         height: 100%;
+        padding-right: 1rem;
+        width: 40%;
 
         .number-of-votes {
             color: #676565;
+            margin: auto;
         }
 
         i {
             transition: .1s ease-in;
-            color: rgba(0, 0, 0, 0.274); 
+            color: rgba(128, 70, 70, 0.274); 
             font-size: 1.2rem;
+            margin: auto;
         }
      
         i:hover {

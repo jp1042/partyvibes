@@ -5,9 +5,9 @@ export default class Vote extends React.Component<any> {
     public render() {
         return (
         <div className="vote">
-            <i className="material-icons" onClick={this.Upvote}>thumb_up</i>
+            <i className="material-icons" onClick={this.Upvote}>keyboard_arrow_up</i>
             <div className="number-of-votes">{this.props.position}</div>
-            <i className="material-icons" onClick={this.Downvote}>thumb_down</i>
+            <i className="material-icons" onClick={this.Downvote}>keyboard_arrow_down</i>
         </div>
         );
     }
