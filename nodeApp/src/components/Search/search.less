@@ -25,37 +25,49 @@
     }
 
     .search-input::-webkit-input-placeholder {
+        color: lightgrey;
         font-size: 1rem;
         text-align: center;
     }
     .search-input::-moz-placeholder {
+        color: lightgrey;
         font-size: 1rem;
         text-align: center;
     }
     .search-input:-ms-input-placeholder {
+        color: lightgrey;
         font-size: 1rem;
         text-align: center;
     }
     .search-input::placeholder {
+        color: lightgrey;
         font-size: 1rem;
         text-align: center;
+    }
+
+    .youtube-svg {
+        height: 1.5rem;
+        float: right;
+        position: absolute;
+        margin-left: 8.5rem;
+        fill: red;
     }
 
     .loading {    
         display: flex;
         position: absolute;
-        margin-top: 2rem;
+        margin-top: 1.5rem;
         width: 15%;
     }
 
     .search-results{
         position: absolute;
         max-height: 26rem;
+        margin-top: -.5rem;
         height: auto;
         width: 14.35%;
         overflow: scroll;
-        background: white;
-        transition: .75s ease-in-out;
+        //transition: .75s ease-in-out;
         z-index: 1;
         overflow: -moz-scrollbars-none;
         -ms-overflow-style: none
@@ -104,10 +116,10 @@
 
     .title {
         color: #505050;
-        font-size: 1rem;
+        font-size: .9rem;
         line-height: 1rem;
         text-align: start;
-        width: 14rem;
+        width: 16rem;
         font-family: sans-serif;
         padding-left: .5rem;
         overflow: hidden;

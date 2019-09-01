@@ -76,4 +76,8 @@ export class SocketHandler {
     public Downvote(roomCode, username, trackId, cb) {
         this.socket.emit("downvote", roomCode, username, trackId, cb);
     }
+
+    public AddTrack(roomCode, username, trackData, cb) {
+        this.socket.emit("addTrack", roomCode, username, trackData, cb);
+    }
 }

@@ -5,6 +5,7 @@ export default class Track extends React.Component<any> {
     public render() {
         return (
             <div className="track">
+                <div className="queue-position">{this.props.queuePosition}</div>
                 <div className="thumbnail-image-wrapper">
                     <img className="thumbnail" src={this.props.data.trackData.thumbnail} />
                 </div>

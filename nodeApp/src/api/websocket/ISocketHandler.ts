@@ -23,4 +23,6 @@ export default interface ISocketHandler {
     getAvailableUsers(cb);
 
     CreateRoom(roomCode, cb);
+
+    AddTrack(roomCode, username, trackData, cb);
 }

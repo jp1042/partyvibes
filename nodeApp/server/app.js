@@ -156,17 +156,12 @@ function rejoinRoom(rooms, roomCode, username, socket, io, callbackFunction) {
         })
 }
 
-function addTrack(rooms, roomCode, username, callbackFunction) {
-    const trackData = {
-        name: "test track",
-        thumbnail: "img.jpg",
-        addedBy: "Johnny",
-    }
+function addTrack(rooms, roomCode, username, trackData, io, callbackFunction) {
     rooms.findOneAndUpdate(
         {_id: roomCode}, 
         {
             $push: {queue: {trackData, votes: 0, position: 0, timestamp: Date.now(), trackId: new ObjectId()}},
-            $inc: {userCount: 1, queueLength: 1},
+            $inc: {queueLength: 1},
         },
         {
             writeConcern: {w:1}, 

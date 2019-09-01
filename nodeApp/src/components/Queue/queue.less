@@ -1,11 +1,14 @@
 .queue{
     //margin: 0 2.175rem;
     width: 101.9%;
-    overflow: hidden;
-   height: 26rem;
+    margin-top: -.5rem;
+    overflow: scroll;
+    height: 26rem;
     -webkit-animation: load 2s ease-in-out;
     -moz-animation: load 2s ease-in-out;
     animation: load 2s ease-in-out;
+    overflow: -moz-scrollbars-none;
+    -ms-overflow-style: none;
 
     @media only screen and (max-width: 786px) {
         margin: 0 1rem;
@@ -29,3 +32,7 @@
         100%{height: 26rem;}
     }
 }
+
+.queue::-webkit-scrollbar { 
+    width: 0 !important 
+};

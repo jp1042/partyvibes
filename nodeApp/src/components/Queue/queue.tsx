@@ -13,11 +13,11 @@ export default class Queue extends React.Component<any> {
 
         return (
             <div>
-                <Search />
+                <Search socket={this.props.socket}/>
                 <div className="queue">
                     <FlipMove>
                         {sortedQueue.map((track, index) =>
-                            <Track key={track.trackId} data={track} socket={this.props.socket} />
+                            <Track key={track.trackId} data={track} queuePosition={index + 1} socket={this.props.socket} />
                         )}
                     </FlipMove>
                 </div>
