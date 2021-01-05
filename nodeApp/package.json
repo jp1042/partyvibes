@@ -9,7 +9,7 @@
         "@types/react-redux": "^6.0.14",
         "@types/react-router": "^4.4.5",
         "@types/spotify-web-playback-sdk": "^0.1.6",
-        "axios": "^0.18.0",
+        "axios": "^0.21.1",
         "babel-core": "^6.26.3",
         "babel-loader": "^7.1.5",
         "babel-plugin-transform-class-properties": "^6.24.1",
