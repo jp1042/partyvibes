@@ -22,7 +22,7 @@
         "css-loader": "^1.0.1",
         "eslint": "^5.16.0",
         "expose-loader": "^0.7.5",
-        "express": "^4.16.4",
+        "express": "^4.17.3",
         "googleapis": "^42.0.0",
         "hash": "^0.2.1",
         "jquery": "^3.4.1",
